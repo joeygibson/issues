@@ -1,0 +1,8 @@
+package: github.com/joeygibson/issues
+import:
+- package: github.com/google/go-github
+  version: b61d23c
+  subpackages:
+  - github
+- package: github.com/spf13/cobra
+  version: 35136c0
