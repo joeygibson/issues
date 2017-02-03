@@ -1,5 +1,5 @@
-hash: 26b2e222bb0ef5d699a1726f801670b0f0fa3320ea132a9c3dd151155f06b20a
-updated: 2017-02-03T00:11:19.893061217-05:00
+hash: 06de6d1234a204acdc274ac17f8f7d5bdba68c8f8372306a56769c5c73866e71
+updated: 2017-02-03T08:55:12.947345412-05:00
 imports:
 - name: github.com/fsnotify/fsnotify
   version: a904159b9206978bb6d53fcc7a769e5cd726c737
@@ -40,7 +40,7 @@ imports:
   version: df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d
 - name: github.com/pelletier/go-toml
   version: a1f048ba24490f9b0674a67e1ce995d685cddf4a
-- name: github.com/sirupsen/logrus
+- name: github.com/Sirupsen/logrus
   version: d26492970760ca5d33129d2d799e34be5c4782eb
 - name: github.com/spf13/afero
   version: 72b31426848c6ef12a7a8e216708cb0d1530f074
@@ -65,7 +65,7 @@ imports:
   subpackages:
   - internal
 - name: golang.org/x/sys
-  version: 7a6e5648d140666db5d920909e082ca00a87ba2c
+  version: d75a52659825e75fff6158388dddc6a5b04f9ba5
   subpackages:
   - unix
 - name: golang.org/x/text

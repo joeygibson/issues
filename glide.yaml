@@ -10,6 +10,6 @@ import:
   version: 314dd2c
 - package: github.com/spf13/viper
   version: 5ed0fc3
-- package: github.com/sirupsen/logrus
+- package: github.com/Sirupsen/logrus
   version: ^0.11.0
    
