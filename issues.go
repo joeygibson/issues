@@ -20,7 +20,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "issues",
 		Short: "Shows issues from a Github repo",
-		Long:  "Currently only works with public repos",
+		Long:  "Provile a Github personal access token to access private repos.",
 		Run:   CmdRoot,
 	}
 )
@@ -29,7 +29,7 @@ func CmdRoot(cmd *cobra.Command, _ []string) {
 	path := getRepoPath(cmd)
 
 	apiKey := viper.GetString("api.key")
-	ts := LoginToGithub(apiKey)
+	ts := loginToGithub(apiKey)
 
 	client := github.NewClient(ts)
 
@@ -121,7 +121,7 @@ func renderTable(issues []*github.Issue, numberOfIssues int) {
 	table.Render()
 }
 
-func LoginToGithub(apiKey string) *http.Client {
+func loginToGithub(apiKey string) *http.Client {
 	var client *http.Client
 
 	if apiKey != "" {
@@ -144,11 +144,10 @@ func setupCobraAndViper() {
 	viper.AddConfigPath(".")
 
 	if err := viper.ReadInConfig(); err != nil {
-		//logrus.Fatalf("Error reading config file: %v\n", err)
 		// this is OK
 	}
 
-	viper.BindEnv("api.key", "API_KEY")
+	viper.BindEnv("api.key", "ISSUES_API_KEY")
 
 	rootCmd.Flags().StringP("key", "k", "", "Github API key")
 	rootCmd.Flags().StringP("repo", "r", "", "Github repo to read")
