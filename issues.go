@@ -20,13 +20,13 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "issues",
 		Short: "Shows issues from a Github repo",
-		Long:  "Provile a Github personal access token to access private repos.",
+		Long:  "Provide a Github personal access token to access private repos.",
 		Run:   CmdRoot,
 	}
 )
 
-func CmdRoot(cmd *cobra.Command, _ []string) {
-	path := getRepoPath(cmd)
+func CmdRoot(cmd *cobra.Command, args []string) {
+	path := getRepoPath(cmd, args[0])
 
 	apiKey := viper.GetString("api.key")
 	ts := loginToGithub(apiKey)
@@ -72,9 +72,7 @@ func getIssues(client *github.Client, path []string, numberOfIssues int) []*gith
 	return issues
 }
 
-func getRepoPath(cmd *cobra.Command) []string {
-	repo, _ := cmd.Root().Flags().GetString("repo")
-
+func getRepoPath(cmd *cobra.Command, repo string) []string {
 	if repo == "" {
 		fmt.Printf("%v\n", "No repo specified")
 		cmd.Help()
@@ -147,14 +145,16 @@ func setupCobraAndViper() {
 		// this is OK
 	}
 
-	viper.BindEnv("api.key", "ISSUES_API_KEY")
+	// Look for env vars starting with `ISSUES_`, replacing `.` in keys
+	// with `_` for env vars. Automatically bind what it finds
+	viper.SetEnvPrefix("ISSUES")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
 
 	rootCmd.Flags().StringP("key", "k", "", "Github API key")
-	rootCmd.Flags().StringP("repo", "r", "", "Github repo to read")
 	rootCmd.Flags().IntP("number-of-issues", "n", -1, "Number of issues to fetch")
 
 	viper.BindPFlag("api.key", rootCmd.Flags().Lookup("key"))
-	viper.BindPFlag("repo", rootCmd.Flags().Lookup("repo"))
 	viper.BindPFlag("number.of.issues", rootCmd.Flags().Lookup("number-of-issues"))
 }
 
