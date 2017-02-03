@@ -1,6 +1,8 @@
-hash: 410a6bb7283b5bec6ba49e40cc763aed45acbc4725922dc9c33b54b35ffb5e12
-updated: 2017-02-02T18:55:50.13958405-05:00
+hash: 26b2e222bb0ef5d699a1726f801670b0f0fa3320ea132a9c3dd151155f06b20a
+updated: 2017-02-03T00:11:19.893061217-05:00
 imports:
+- name: github.com/fsnotify/fsnotify
+  version: a904159b9206978bb6d53fcc7a769e5cd726c737
 - name: github.com/golang/protobuf
   version: 8ee79997227bf9b34611aee7946ae64735e6fd93
   subpackages:
@@ -13,16 +15,47 @@ imports:
   version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
   subpackages:
   - query
+- name: github.com/hashicorp/hcl
+  version: 372e8ddaa16fd67e371e9323807d056b799360af
+  subpackages:
+  - hcl/ast
+  - hcl/parser
+  - hcl/scanner
+  - hcl/strconv
+  - hcl/token
+  - json/parser
+  - json/scanner
+  - json/token
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/magiconair/properties
+  version: b3b15ef068fd0b17ddf408a23669f20811d194d2
 - name: github.com/mattn/go-runewidth
   version: 737072b4e32b7a5018b4a7125da8d12de90e8045
+- name: github.com/mitchellh/mapstructure
+  version: db1efb556f84b25a0a13a04aad883943538ad2e0
 - name: github.com/olekukonko/tablewriter
   version: febf2d34b54a69ce7530036c7503b1c9fbfdf0bb
+- name: github.com/pelletier/go-buffruneio
+  version: df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d
+- name: github.com/pelletier/go-toml
+  version: a1f048ba24490f9b0674a67e1ce995d685cddf4a
+- name: github.com/sirupsen/logrus
+  version: d26492970760ca5d33129d2d799e34be5c4782eb
+- name: github.com/spf13/afero
+  version: 72b31426848c6ef12a7a8e216708cb0d1530f074
+  subpackages:
+  - mem
+- name: github.com/spf13/cast
+  version: d1139bab1c07d5ad390a65e7305876b3c1a8370b
 - name: github.com/spf13/cobra
   version: 35136c09d8da66b901337c6e86fd8e88a1a255bd
+- name: github.com/spf13/jwalterweatherman
+  version: fa7ca7e836cf3a8bb4ebf799f472c12d7e903d66
 - name: github.com/spf13/pflag
   version: 9ff6c6923cfffbcd502984b8e0c80539a94968b7
+- name: github.com/spf13/viper
+  version: 5ed0fc31f7f453625df314d8e66b9791e8d13003
 - name: golang.org/x/net
   version: 007e530097ad7f954752df63046b4036f98ba6a6
   subpackages:
@@ -31,6 +64,15 @@ imports:
   version: 314dd2c0bf3ebd592ec0d20847d27e79d0dbe8dd
   subpackages:
   - internal
+- name: golang.org/x/sys
+  version: 7a6e5648d140666db5d920909e082ca00a87ba2c
+  subpackages:
+  - unix
+- name: golang.org/x/text
+  version: 506f9d5c962f284575e88337e7d9296d27e729d3
+  subpackages:
+  - transform
+  - unicode/norm
 - name: google.golang.org/appengine
   version: a2c54d2174c17540446e0ced57d9d459af61bc1c
   subpackages:
@@ -41,4 +83,6 @@ imports:
   - internal/remote_api
   - internal/urlfetch
   - urlfetch
+- name: gopkg.in/yaml.v2
+  version: 4c78c975fe7c825c6d1466c42be594d1d6f3aba6
 testImports: []

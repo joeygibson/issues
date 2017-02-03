@@ -5,19 +5,19 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 	"net/http"
 	"net/url"
 	"os"
+	"os/user"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
 
 var (
-	numberOfIssues int
-	repo           string
-	apikey         string
-	rootCmd        = &cobra.Command{
+	rootCmd = &cobra.Command{
 		Use:   "issues",
 		Short: "Shows issues from a Github repo",
 		Long:  "Currently only works with public repos",
@@ -26,6 +26,55 @@ var (
 )
 
 func CmdRoot(cmd *cobra.Command, _ []string) {
+	path := getRepoPath(cmd)
+
+	apiKey := viper.GetString("api.key")
+	ts := LoginToGithub(apiKey)
+
+	client := github.NewClient(ts)
+
+	numberOfIssues := viper.GetInt("number.of.issues")
+
+	issues := getIssues(client, path, numberOfIssues)
+
+	if len(issues) == 0 {
+		fmt.Println("No issues found")
+		os.Exit(0)
+	}
+
+	renderTable(issues, numberOfIssues)
+}
+
+func getIssues(client *github.Client, path []string, numberOfIssues int) []*github.Issue {
+	var issues []*github.Issue
+
+	opt := &github.IssueListByRepoOptions{
+		ListOptions: github.ListOptions{PerPage: 100},
+	}
+
+	// if numberOfIssues < 0, we fetch all issues
+	for len(issues) <= numberOfIssues || numberOfIssues < 0 {
+		newIssues, resp, err := client.Issues.ListByRepo(path[1], path[2], opt)
+		if err != nil {
+			fmt.Printf("error fetching issues for %v/%v: %v\n", path[1], path[2], err)
+			os.Exit(3)
+		}
+
+		issues = append(issues, newIssues...)
+
+		if resp.NextPage == 0 {
+			break
+		}
+
+		opt.ListOptions.Page = resp.NextPage
+	}
+
+	return issues
+}
+
+func getRepoPath(cmd *cobra.Command) []string {
+	repo, _ := cmd.Root().Flags().GetString("repo")
+
 	if repo == "" {
 		fmt.Printf("%v\n", "No repo specified")
 		cmd.Help()
@@ -46,38 +95,10 @@ func CmdRoot(cmd *cobra.Command, _ []string) {
 		os.Exit(2)
 	}
 
-	ts := LoginToGithub(apikey)
+	return path
+}
 
-	client := github.NewClient(ts)
-
-	opt := &github.IssueListByRepoOptions{
-		ListOptions: github.ListOptions{PerPage: 100},
-	}
-
-	var issues []*github.Issue
-
-	// if numberOfIssues < 0, we fetch all issues
-	for len(issues) <= numberOfIssues || numberOfIssues < 0 {
-		newIssues, resp, err := client.Issues.ListByRepo(path[1], path[2], opt)
-		if err != nil {
-			fmt.Printf("error fetching issues for %v/%v: %v\n", path[1], path[2], err)
-			os.Exit(3)
-		}
-
-		issues = append(issues, newIssues...)
-
-		if resp.NextPage == 0 {
-			break
-		}
-
-		opt.ListOptions.Page = resp.NextPage
-	}
-
-	if len(issues) == 0 {
-		fmt.Println("No issues found")
-		os.Exit(0)
-	}
-
+func renderTable(issues []*github.Issue, numberOfIssues int) {
 	table := tablewriter.NewWriter(os.Stdout)
 
 	table.SetHeader([]string{"index", "number", "created_at", "title"})
@@ -105,7 +126,7 @@ func LoginToGithub(apiKey string) *http.Client {
 
 	if apiKey != "" {
 		tokenSource := oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: apikey},
+			&oauth2.Token{AccessToken: apiKey},
 		)
 
 		client = oauth2.NewClient(oauth2.NoContext, tokenSource)
@@ -114,10 +135,31 @@ func LoginToGithub(apiKey string) *http.Client {
 	return client
 }
 
+func setupCobraAndViper() {
+	usr, _ := user.Current()
+
+	viper.SetConfigName("config")
+	viper.SetConfigType("yml")
+	viper.AddConfigPath(filepath.Join(usr.HomeDir, ".issues"))
+	viper.AddConfigPath(".")
+
+	if err := viper.ReadInConfig(); err != nil {
+		//logrus.Fatalf("Error reading config file: %v\n", err)
+		// this is OK
+	}
+
+	viper.BindEnv("api.key", "API_KEY")
+
+	rootCmd.Flags().StringP("key", "k", "", "Github API key")
+	rootCmd.Flags().StringP("repo", "r", "", "Github repo to read")
+	rootCmd.Flags().IntP("number-of-issues", "n", -1, "Number of issues to fetch")
+
+	viper.BindPFlag("api.key", rootCmd.Flags().Lookup("key"))
+	viper.BindPFlag("repo", rootCmd.Flags().Lookup("repo"))
+	viper.BindPFlag("number.of.issues", rootCmd.Flags().Lookup("number-of-issues"))
+}
+
 func main() {
-	rootCmd.Flags().IntVarP(&numberOfIssues, "number-of-issues",
-		"n", -1, "the number of issues to retrieve")
-	rootCmd.Flags().StringVarP(&repo, "repo", "r", "", "the Github URL to retrieve")
-	rootCmd.Flags().StringVarP(&apikey, "api-key", "a", "", "a Github personal API key")
+	setupCobraAndViper()
 	rootCmd.Execute()
 }

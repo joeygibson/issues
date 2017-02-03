@@ -8,4 +8,8 @@ import:
   version: 35136c0
 - package: golang.org/x/oauth2
   version: 314dd2c
-
+- package: github.com/spf13/viper
+  version: 5ed0fc3
+- package: github.com/sirupsen/logrus
+  version: ^0.11.0
+   
