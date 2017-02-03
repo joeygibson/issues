@@ -5,6 +5,8 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
+	"net/http"
 	"net/url"
 	"os"
 	"strconv"
@@ -14,6 +16,7 @@ import (
 var (
 	numberOfIssues int
 	repo           string
+	apikey         string
 	rootCmd        = &cobra.Command{
 		Use:   "issues",
 		Short: "Shows issues from a Github repo",
@@ -43,7 +46,9 @@ func CmdRoot(cmd *cobra.Command, _ []string) {
 		os.Exit(2)
 	}
 
-	client := github.NewClient(nil)
+	ts := LoginToGithub(apikey)
+
+	client := github.NewClient(ts)
 
 	opt := &github.IssueListByRepoOptions{
 		ListOptions: github.ListOptions{PerPage: 100},
@@ -95,10 +100,24 @@ func CmdRoot(cmd *cobra.Command, _ []string) {
 	table.Render()
 }
 
+func LoginToGithub(apiKey string) *http.Client {
+	var client *http.Client
+
+	if apiKey != "" {
+		tokenSource := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: apikey},
+		)
+
+		client = oauth2.NewClient(oauth2.NoContext, tokenSource)
+	}
+
+	return client
+}
+
 func main() {
 	rootCmd.Flags().IntVarP(&numberOfIssues, "number-of-issues",
 		"n", -1, "the number of issues to retrieve")
 	rootCmd.Flags().StringVarP(&repo, "repo", "r", "", "the Github URL to retrieve")
-
+	rootCmd.Flags().StringVarP(&apikey, "api-key", "a", "", "a Github personal API key")
 	rootCmd.Execute()
 }
