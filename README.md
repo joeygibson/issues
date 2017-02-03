@@ -3,6 +3,25 @@ This is a command-line tool that started out as the code in [this blog post](htt
 I've modified it to use the [Cobra](https://github.com/spf13/cobra) option parser, and the [Viper](https://github.com/spf13/viper)
 companion library to support other ways of passing in some options.
 
+# Running
+The easiest way to run it is to just specify the URL of the repo, such as 
+```bash
+issues github.com/joeygibson/issues
+```
+
+
+## Options
+```bash
+Provile a Github personal access token to access private repos.
+
+Usage:
+  issues [flags]
+
+Flags:
+  -k, --key string             Github API key
+  -n, --number-of-issues int   Number of issues to fetch (default -1)
+```
+  
 # Accessing Private Repos
 In order to get to private repos, you need to provide a 
 [Github personal token](https://github.com/settings/tokens). There are three ways to provide
